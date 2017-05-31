@@ -1,0 +1,22 @@
+[
+  {
+    "model": "app.item",
+    "pk": 1,
+    "fields": {
+      "created": "2017-05-29T18:51:19.877Z",
+      "name": "baget",
+      "description": "made of chicken",
+      "price": 13
+    }
+  },
+  {
+    "model": "app.item",
+    "pk": 2,
+    "fields": {
+      "created": "2017-05-29T18:51:19.877Z",
+      "name": "shawerma",
+      "description": "made of beef",
+      "price": 15
+    }
+  }
+]

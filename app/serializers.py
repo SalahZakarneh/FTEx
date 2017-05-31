@@ -1,31 +1,55 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers
-from app.models import Item
+
+from app.models import Item, Order
 
 
-class ItemSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    name = serializers.CharField(required=False, allow_blank=True, max_length=100)
-    description = serializers.CharField(style={'base_template': 'textarea.html'})
-    price = serializers.IntegerField(required=False)
+class ItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Item
+        fields = ('id', 'name', 'description', 'price')
 
-    def create(self, validated_data):
-        """
-        Create and return a new `Snippet` instance, given the validated data.
-        """
-        return Item.objects.create(**validated_data)
 
-    def update(self, instance, validated_data):
-        """
-        Update and return an existing `Snippet` instance, given the validated data.
-        """
-        instance.name = validated_data.get('name', instance.name)
-        instance.description = validated_data.get('description', instance.description)
-        instance.price = validated_data.get('price', instance.price)
-        instance.save()
-        return instance
+class OrderSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
 
-#
-# class ItemModelSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Item
-#         fields = ('id', 'name', 'description', 'price')
+    class Meta:
+        model = Order
+        fields = ('id', 'deliveryTime', 'address', 'quantity', 'item', 'user')
+
+
+class BestUserSerializer(serializers.ModelSerializer):
+    total = serializers.IntegerField()
+    bestuser = serializers.SerializerMethodField("get_user")
+
+    def get_user(self, obj):
+        return User.objects.filter(id=obj["user_id"]).values("username", "email").first()
+
+    class Meta:
+        depth = 1
+        model = Order
+        fields = ('user_id', "bestuser", 'total')
+
+class AvgSpendinSerializer(serializers.ModelSerializer):
+    avg = serializers.FloatField()
+    useravg = serializers.SerializerMethodField("get_user")
+
+    def get_user(self, obj):
+        return User.objects.filter(id=obj["user_id"]).values("username", "email").first()
+
+    class Meta:
+        depth = 1
+        model = Order
+        fields = ('user_id', 'avg', 'useravg')
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'url', 'username', 'email')
+
+class MonthlyRevSerializer(serializers.Serializer):
+    sum = serializers.IntegerField()
+
+    class Meta:
+        fields = ("sum")

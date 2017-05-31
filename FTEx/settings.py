@@ -70,6 +70,9 @@ TEMPLATES = [
     },
 ]
 
+FIXTURE_DIRS ={
+
+}
 WSGI_APPLICATION = 'FTEx.wsgi.application'
 
 REST_FRAMEWORK = {
